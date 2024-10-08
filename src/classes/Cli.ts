@@ -61,13 +61,17 @@ class Cli {
           name: 'vehicleType',
           message: 'Select a vehicle type',
           // TODO: Update the choices array to include Truck and Motorbike
-          choices: ['Car'],
+          choices: ['Car', 'Truck', 'Motorbike'],
         },
       ])
       .then((answers) => {
         if (answers.vehicleType === 'Car') {
           // create a car
           this.createCar();
+        } else if (answers.vehicleType === 'Truck') {
+          this.createTruck();
+        } else if (answers.vehicleType === 'Motorbike') {
+          this.createMotorbike();
         }
         // TODO: add statements to create a truck or motorbike if the user selects the respective vehicle type
       });
@@ -248,6 +252,14 @@ class Cli {
       ])
       .then((answers) => {
         // TODO: Use the answers object to pass the required properties to the Motorbike constructor
+        const frontWheel = new Wheel(
+          parseInt(answers.frontWheelDiameter),
+          answers.frontWheelBrand,
+        );
+        const rearWheel = new Wheel(
+          parseInt(answers.rearWheelDiameter),
+          answers.rearWheelBrand,
+        );
         const motorbike = new Motorbike(
           Cli.generateVin(),
           answers.color,
@@ -256,7 +268,7 @@ class Cli {
           parseInt(answers.year),
           parseInt(answers.weight),
           parseInt(answers.topSpeed),
-          [],
+          [frontWheel, rearWheel],
         )
         // TODO: push the motorbike to the vehicles array
         this.vehicles.push(motorbike);
@@ -387,6 +399,7 @@ class Cli {
             if (this.vehicles[i].vin === this.selectedVehicleVin) {
               if (this.vehicles[i] instanceof Truck) {
                 this.findVehicleToTow(this.vehicles[i] as Truck);
+                this.performActions();
                 return;
               } else {
                 console.log('You cannot tow with this vehicle. Choose a truck.');
@@ -398,10 +411,11 @@ class Cli {
             if (this.vehicles[i].vin === this.selectedVehicleVin) {
               if (this.vehicles[i] instanceof Motorbike) {
                 (this.vehicles[i] as Motorbike).wheelie();
+                this.performActions();
+                return;
               } else {
                 console.log('You cannot perform a wheelie with this vehicle. Choose a Motorbike.');
               }
-              return;
             }
           }
         }
